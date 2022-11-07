@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import UsersContainer from './users/UsersContainer';
+import CreateUser from './users/CreateUser';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  state = {
+    userData: [],
+  };
+
+  componentDidMount() {
+    fetch('http://localhost:5000/api')
+      .then((result) => result.json())
+      .then((data) => this.setState({ userData: data }));
+  }
+
+  removeUser = (id) => {
+    const { userData } = this.state;
+    const updatedUsers = userData.filter((user) => user.id !== id);
+    this.setState({ userData: updatedUsers });
+  };
+  addUser = (user) => {
+    const { userData } = this.state;
+    const updatedUsers = [...userData, user];
+    this.setState({ userData: updatedUsers });
+  };
+
+  render() {
+    const { userData } = this.state;
+    return (
+      <div className='container'>
+        <UsersContainer users={userData} removeUser={this.removeUser} />
+        <CreateUser addUser={this.addUser} />
+      </div>
+    );
+  }
 }
 
 export default App;
